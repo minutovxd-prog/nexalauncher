@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexaLauncher | Кроссплатформенный клиент Minecraft с модами</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --neon-green: #55ff55;
+            --neon-purple: #aa55ff;
+            --neon-blue: #55aaff;
+            --dark-bg: #0f0f0f;
+            --card-bg: #1a1a1a;
+            --text-light: #e0e0e0;
+            --text-gray: #888;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-light);
+            font-family: 'Segoe UI', 'Roboto', sans-serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Навигация */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(10, 10, 10, 0.95);
+            padding: 15px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            border-bottom: 2px solid var(--neon-green);
+            backdrop-filter: blur(10px);
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--neon-green);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 500;
+            transition: 0.3s;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--neon-green);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--neon-green);
+            transition: width 0.3s;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .github-btn {
+            background: #333;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .github-btn:hover {
+            background: var(--neon-green);
+            color: black;
+        }
+
+        /* Герой секция */
+        .hero {
+            padding: 150px 5% 100px;
+            text-align: center;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            border-bottom: 3px solid var(--neon-green);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M0,0 L100,100 M100,0 L0,100" stroke="%23222" stroke-width="0.5"/></svg>');
+            opacity: 0.3;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            color: var(--neon-green);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 0 0 20px rgba(85, 255, 85, 0.5);
+        }
+
+        .tagline {
+            font-size: 1.3rem;
+            color: var(--text-gray);
+            max-width: 800px;
+            margin: 0 auto 40px;
+        }
+
+        /* Кнопки */
+        .btn {
+            display: inline-block;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: 0.3s;
+            margin: 10px;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--neon-green);
+            color: black;
+            box-shadow: 0 0 20px rgba(85, 255, 85, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--neon-green);
+            border: 2px solid var(--neon-green);
+        }
+
+        .btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(85, 255, 85, 0.6);
+        }
+
+        /* Секции */
+        .section {
+            padding: 80px 5%;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 50px;
+            color: var(--neon-green);
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 100px;
+            height: 3px;
+            background: var(--neon-green);
+            margin: 15px auto;
+        }
+
+        /* Карточки серверов */
+        .servers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .server-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 30px;
+            border: 1px solid #333;
+            transition: 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .server-card:hover {
+            border-color: var(--neon-green);
+            transform: translateY(-10px);
+            box-shadow: 0 10px 30px rgba(85, 255, 85, 0.2);
+        }
+
+        .server-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--neon-green), var(--neon-purple));
+        }
+
+        .server-icon {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .server-version {
+            display: inline-block;
+            padding: 5px 15px;
+            background: #333;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin: 10px 0;
+        }
+
+        .mod-list {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .mod-tag {
+            background: #222;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.85rem;
+            color: var(--text-gray);
+        }
+
+        .status {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .status-online {
+            background: rgba(85, 255, 85, 0.1);
+            color: var(--neon-green);
+        }
+
+        .status-offline {
+            background: rgba(255, 85, 85, 0.1);
+            color: #ff5555;
+        }
+
+        /* Версии Minecraft */
+        .versions-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .version-tab {
+            padding: 10px 25px;
+            background: #222;
+            border: none;
+            color: var(--text-light);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .version-tab.active {
+            background: var(--neon-green);
+            color: black;
+        }
+
+        .version-content {
+            display: none;
+        }
+
+        .version-content.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Особенности */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .feature-card {
+            text-align: center;
+            padding: 30px 20px;
+            background: var(--card-bg);
+            border-radius: 10px;
+            border: 1px solid #333;
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            color: var(--neon-green);
+            margin-bottom: 20px;
+        }
+
+        /* Футер */
+        footer {
+            background: #0a0a0a;
+            padding: 60px 5% 30px;
+            margin-top: 80px;
+            border-top: 2px solid #333;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-section h3 {
+            color: var(--neon-green);
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .social-links a {
+            color: var(--text-light);
+            font-size: 1.5rem;
+            transition: 0.3s;
+        }
+
+        .social-links a:hover {
+            color: var(--neon-green);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid #333;
+            color: var(--text-gray);
+            font-size: 0.9rem;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px;
+            }
+            
+            .nav-links {
+                gap: 15px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .section {
+                padding: 60px 5%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Навигация -->
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fas fa-rocket"></i>
+            <span>NexaLauncher</span>
+        </div>
+        
+        <div class="nav-links">
+            <a href="#home">Главная</a>
+            <a href="#servers">Сборки</a>
+            <a href="#features">Возможности</a>
+            <a href="#download">Скачать</a>
+            <a href="#community">Сообщество</a>
+        </div>
+        
+        <a href="https://github.com/yourusername/NexaLauncher" class="github-btn" target="_blank">
+            <i class="fab fa-github"></i> GitHub
+        </a>
+    </nav>
+
+    <!-- Герой секция -->
+    <section class="hero" id="home">
+        <h1>NexaLauncher</h1>
+        <p class="tagline">Кроссплатформенный клиент для Minecraft с автоматической установкой модов. Играй в Hi-Tech, TechnoMagic, Astrotech и другие популярные сборки одним кликом.</p>
+        
+        <div class="download-container">
+            <a href="#download" class="btn btn-primary">
+                <i class="fas fa-download"></i> Скачать лаунчер
+            </a>
+            <a href="#servers" class="btn btn-secondary">
+                <i class="fas fa-server"></i> Смотреть сборки
+            </a>
+        </div>
+        
+        <div style="margin-top: 50px; color: var(--text-gray);">
+            <p><i class="fas fa-check"></i> Поддержка Windows, Linux, macOS</p>
+            <p><i class="fas fa-check"></i> Автоматическое обновление модов</p>
+            <p><i class="fas fa-check"></i> Оптимизация производительности</p>
+        </div>
+    </section>
+
+    <!-- Секция сборок -->
+    <section class="section" id="servers">
+        <h2 class="section-title">Популярные сборки</h2>
+        
+        <div class="versions-tabs">
+            <button class="version-tab active" data-version="1.7.10">1.7.10</button>
+            <button class="version-tab" data-version="1.12.2">1.12.2</button>
+            <button class="version-tab" data-version="1.20.1">1.20.1</button>
+            <button class="version-tab" data-version="1.21.1">1.21.1</button>
+        </div>
+        
+        <div id="version-1.7.10" class="version-content active">
+            <div class="servers-grid">
+                <div class="server-card">
+                    <div class="server-icon">
+                        <i class="fas fa-industry"></i>
+                    </div>
+                    <h3>Hi-Tech Classic</h3>
+                    <span class="server-version">1.7.10</span>
+                    <p>Классическая индустриальная сборка с IndustrialCraft 2, BuildCraft, Thermal Expansion и Advanced Solar Panels.</p>
+                    <div class="mod-list">
+                        <span class="mod-tag">IC2</span>
+                        <span class="mod-tag">BuildCraft</span>
+                        <span class="mod-tag">Thermal Expansion</span>
+                        <span class="mod-tag">Advanced Solar</span>
+                        <span class="mod-tag">Applied Energistics 2</span>
+                    </div>
+                    <div class="status status-online">
+                        <i class="fas fa-circle"></i> Онлайн: 124 игрока
+                    </div>
+                </div>
+                
+                <div class="server-card">
+                    <div class="server-icon">
+                        <i class="fas fa-hat-wizard"></i>
+                    </div>
+                    <h3>TechnoMagic RPG</h3>
+                    <span class="server-version">1.7.10</span>
+                    <p>Магия, технологии и RPG элементы. Thaumcraft, Blood Magic, Witchery и продвинутая система квестов.</p>
+                    <div class="mod-list">
+                        <span class="mod-tag">Thaumcraft</span>
+                        <span class="mod-tag">Blood Magic</span>
+                        <span class="mod-tag">Witchery</span>
+                        <span class="mod-tag">Botania</span>
+                        <span class="mod-tag">RPG Elements</span>
+                    </div>
+                    <div class="status status-online">
+                        <i class="fas fa-circle"></i> Онлайн: 87 игроков
+                    </div>
+                </div>
+                
+                <div class="server-card">
+                    <div class="server-icon">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <h3>Astrotech</h3>
+                    <span class="server-version">1.7.10</span>
+                    <p>Космические технологии и исследование галактики. Galacticraft, Advanced Rocketry, Space Astronomy.</p>
+                    <div class="mod-list">
+                        <span class="mod-tag">Galacticraft</span>
+                        <span class="mod-tag">Advanced Rocketry</span>
+                        <span class="mod-tag">Space Astronomy</span>
+                        <span class="mod-tag">Extra Planets</span>
+                    </div>
+                    <div class="status status-offline">
+                        <i class="fas fa-circle"></i> Скоро открытие
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="version-1.12.2" class="version-content">
+            <div class="servers-grid">
+                <div class="server-card">
+                    <div class="server-icon">
+                        <i class="fas fa-atom"></i>
+                    </div>
+                    <h3>Modern Hi-Tech</h3>
+                    <span class="server-version">1.12.2</span>
+                    <p>Современные технологии с Create, Mekanism, Immersive Engineering и эпохальная автоматизация.</p>
+                    <div class="mod-list">
+                        <span class="mod-tag">Create</span>
+                        <span class="mod-tag">Mekanism</span>
+                        <span class="mod-tag">Immersive Engineering</span>
+                        <span class="mod-tag">Refined Storage</span>
+                    </div>
+                    <div class="status status-online">
+                        <i class="fas fa-circle"></i> Онлайн: 256 игроков
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Возможности -->
+    <section class="section" id="features" style="background: #0a0a0a;">
+        <h2 class="section-title">Возможности лаунчера</h2>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <h3>Быстрая установка</h3>
+                <p>Автоматическая установка сборок одним кликом без ручной настройки</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-sync-alt"></i>
+                </div>
+                <h3>Автообновление</h3>
+                <p>Моды и лаунчер обновляются автоматически</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-tachometer-alt"></i>
+                </div>
+                <h3>Оптимизация</h3>
+                <p>Встроенные оптимизации для лучшей производительности</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-code-branch"></i>
+                </div>
+                <h3>GitHub Integration</h3>
+                <p>Прямая загрузка сборок из GitHub репозиториев</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Скачивание -->
+    <section class="section" id="download">
+        <h2 class="section-title">Скачать NexaLauncher</h2>
+        
+        <div style="text-align: center; max-width: 800px; margin: 0 auto;">
+            <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin: 40px 0;">
+                <div style="background: var(--card-bg); padding: 30px; border-radius: 10px; width: 250px;">
+                    <i class="fas fa-windows" style="font-size: 3rem; color: var(--neon-blue); margin-bottom: 20px;"></i>
+                    <h3>Windows</h3>
+                    <p>Windows 7 и выше</p>
+                    <a href="#" class="btn btn-primary" style="margin-top: 20px;">
+                        <i class="fas fa-download"></i> NexaLauncher.exe
+                    </a>
+                </div>
+                
+                <div style="background: var(--card-bg); padding: 30px; border-radius: 10px; width: 250px;">
+                    <i class="fab fa-linux" style="font-size: 3rem; color: var(--neon-green); margin-bottom: 20px;"></i>
+                    <h3>Linux</h3>
+                    <p>.deb и .rpm пакеты</p>
+                    <a href="#" class="btn btn-primary" style="margin-top: 20px;">
+                        <i class="fas fa-download"></i> NexaLauncher.AppImage
+                    </a>
+                </div>
+                
+                <div style="background: var(--card-bg); padding: 30px; border-radius: 10px; width: 250px;">
+                    <i class="fab fa-apple" style="font-size: 3rem; color: var(--text-gray); margin-bottom: 20px;"></i>
+                    <h3>macOS</h3>
+                    <p>macOS 10.14+</p>
+                    <a href="#" class="btn btn-primary" style="margin-top: 20px;">
+                        <i class="fas fa-download"></i> NexaLauncher.dmg
+                    </a>
+                </div>
+            </div>
+            
+            <div style="margin-top: 40px; background: rgba(85, 255, 85, 0.1); padding: 20px; border-radius: 10px; border-left: 5px solid var(--neon-green);">
+                <h3><i class="fas fa-terminal"></i> Установка через терминал</h3>
+                <pre style="background: #1a1a1a; padding: 20px; border-radius: 5px; overflow-x: auto; text-align: left; margin-top: 15px; color: var(--neon-green);">
+# Для Linux/Mac через curl
+curl -L https://nexalauncher.github.io/install.sh | bash
+
+# Или через Git
+git clone https://github.com/yourusername/NexaLauncher.git
+cd NexaLauncher
+./install.sh</pre>
+            </div>
+        </div>
+    </section>
+
+    <!-- Футер -->
+    <footer id="community">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>NexaLauncher</h3>
+                <p>Кроссплатформенный клиент для Minecraft с поддержкой модификаций. Открытый исходный код на GitHub.</p>
+                <div class="social-links">
+                    <a href="https://github.com/yourusername/NexaLauncher" target="_blank"><i class="fab fa-github"></i></a>
+                    <a href="https://discord.gg/yourinvite" target="_blank"><i class="fab fa-discord"></i></a>
+                    <a href="https://vk.com/nexalauncher" target="_blank"><i class="fab fa-vk"></i></a>
+                    <a href="https://t.me/nexalauncher" target="_blank"><i class="fab fa-telegram"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Быстрые ссылки</h3>
+                <ul style="list-style: none;">
+                    <li><a href="#home" style="color: var(--text-gray); text-decoration: none;">Главная</a></li>
+                    <li><a href="#servers" style="color: var(--text-gray); text-decoration: none;">Сборки</a></li>
+                    <li><a href="#download" style="color: var(--text-gray); text-decoration: none;">Скачать</a></li>
+                    <li><a href="https://github.com/yourusername/NexaLauncher/issues" style="color: var(--text-gray); text-decoration: none;">Сообщить о баге</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Поддерживаемые версии</h3>
+                <ul style="list-style: none;">
+                    <li>Minecraft 1.7.10</li>
+                    <li>Minecraft 1.12.2</li>
+                    <li>Minecraft 1.20.1</li>
+                    <li>Minecraft 1.21.1</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="copyright">
+            <p>&copy; 2024 NexaLauncher Project. Не аффилирован с Mojang AB. Все права на Minecraft принадлежат Mojang Studios.</p>
+            <p style="margin-top: 10px; font-size: 0.8rem;">
+                <i class="fab fa-github"></i> Star us on GitHub! 
+                <a href="https://github.com/yourusername/NexaLauncher" style="color: var(--neon-green); text-decoration: none;">github.com/yourusername/NexaLauncher</a>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Табы версий Minecraft
+        document.querySelectorAll('.version-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Убираем активный класс у всех табов и контента
+                document.querySelectorAll('.version-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.version-content').forEach(c => c.classList.remove('active'));
+                
+                // Добавляем активный класс текущему табу
+                tab.classList.add('active');
+                
+                // Показываем соответствующий контент
+                const version = tab.getAttribute('data-version');
+                document.getElementById(`version-${version}`).classList.add('active');
+            });
+        });
+        
+        // Плавная прокрутка
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                if(targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if(targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
+        // GitHub звездочка
+        fetch('https://api.github.com/repos/yourusername/NexaLauncher')
+            .then(response => response.json())
+            .then(data => {
+                const stars = data.stargazers_count;
+                if(stars) {
+                    const starElement = document.querySelector('.github-btn');
+                    if(starElement) {
+                        starElement.innerHTML = `<i class="fab fa-github"></i> ${stars} Stars`;
+                    }
+                }
+            })
+            .catch(error => console.log('GitHub API error:', error));
+    </script>
+</body>
+                  </html>
