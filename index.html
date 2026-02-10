@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexaCheat | Каталог Lua-скриптов для ArizonaRP</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --hacker-green: #00ff00;
+            --matrix-green: #00cc00;
+            --dark-terminal: #0a0a0a;
+            --terminal-bg: #111111;
+            --neon-blue: #0099ff;
+            --neon-purple: #9900ff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--dark-terminal);
+            color: var(--hacker-green);
+            font-family: 'Courier New', monospace;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Анимация матрицы на фоне */
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.1;
+            pointer-events: none;
+        }
+
+        /* Секретный доступ */
+        .secret-access {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+        }
+
+        .secret-btn {
+            background: transparent;
+            border: 1px solid var(--hacker-green);
+            color: var(--hacker-green);
+            padding: 5px 10px;
+            cursor: pointer;
+            font-family: monospace;
+            font-size: 12px;
+            transition: 0.3s;
+        }
+
+        .secret-btn:hover {
+            box-shadow: 0 0 10px var(--hacker-green);
+        }
+
+        /* Модалка для админа */
+        .admin-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 2000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .admin-content {
+            background: var(--terminal-bg);
+            border: 2px solid var(--hacker-green);
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 30px;
+            box-shadow: 0 0 50px rgba(0, 255, 0, 0.3);
+        }
+
+        .close-admin {
+            float: right;
+            background: transparent;
+            border: none;
+            color: var(--hacker-green);
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        /* Заголовок */
+        .header {
+            text-align: center;
+            padding: 100px 20px 60px;
+            border-bottom: 2px solid var(--hacker-green);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent 30%, rgba(0, 255, 0, 0.05) 50%, transparent 70%);
+            animation: scanline 15s linear infinite;
+        }
+
+        @keyframes scanline {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+        }
+
+        h1 {
+            font-size: 4rem;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px var(--hacker-green);
+            animation: glitch 3s infinite;
+        }
+
+        @keyframes glitch {
+            0%, 100% { transform: translate(0); }
+            5% { transform: translate(-2px, -2px); }
+            10% { transform: translate(2px, 2px); }
+            15% { transform: translate(-2px, 2px); }
+        }
+
+        .tagline {
+            font-size: 1.2rem;
+            color: #00cc00;
+            margin-bottom: 40px;
+            font-family: 'Consolas', monospace;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            color: var(--neon-blue);
+            font-weight: bold;
+        }
+
+        /* Скрипты */
+        .scripts-section {
+            padding: 80px 5%;
+        }
+
+        .filter-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .filter-tab {
+            background: transparent;
+            border: 1px solid var(--hacker-green);
+            color: var(--hacker-green);
+            padding: 10px 25px;
+            cursor: pointer;
+            font-family: monospace;
+            transition: 0.3s;
+        }
+
+        .filter-tab.active {
+            background: var(--hacker-green);
+            color: black;
+        }
+
+        .scripts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .script-card {
+            background: var(--terminal-bg);
+            border: 1px solid #333;
+            padding: 25px;
+            position: relative;
+            transition: 0.3s;
+            overflow: hidden;
+        }
+
+        .script-card:hover {
+            border-color: var(--hacker-green);
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .script-card::before {
+            content: '>>> ';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: var(--hacker-green);
+            opacity: 0.5;
+        }
+
+        .script-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-left: 20px;
+        }
+
+        .script-name {
+            font-size: 1.4rem;
+            color: var(--neon-blue);
+            font-weight: bold;
+        }
+
+        .script-badge {
+            background: var(--hacker-green);
+            color: black;
+            padding: 3px 10px;
+            font-size: 0.8rem;
+            border-radius: 3px;
+        }
+
+        .script-description {
+            color: #aaa;
+            margin-bottom: 20px;
+            line-height: 1.5;
+            font-family: 'Consolas', monospace;
+        }
+
+        .script-features {
+            margin-bottom: 20px;
+        }
+
+        .script-feature {
+            color: #00cc00;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .script-feature::before {
+            content: '►';
+            color: var(--hacker-green);
+        }
+
+        .script-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #333;
+        }
+
+        .script-version {
+            color: #999;
+            font-size: 0.9rem;
+        }
+
+        .download-btn {
+            background: transparent;
+            border: 1px solid var(--hacker-green);
+            color: var(--hacker-green);
+            padding: 8px 20px;
+            text-decoration: none;
+            transition: 0.3s;
+            font-family: monospace;
+        }
+
+        .download-btn:hover {
+            background: var(--hacker-green);
+            color: black;
+        }
+
+        /* Админ панель */
+        .admin-panel {
+            margin-top: 40px;
+            border: 2px solid var(--neon-blue);
+            padding: 30px;
+        }
+
+        .admin-title {
+            color: var(--neon-blue);
+            font-size: 2rem;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .admin-form {
+            display: grid;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .form-label {
+            color: var(--hacker-green);
+            font-weight: bold;
+        }
+
+        .form-input, .form-textarea, .form-file {
+            background: #222;
+            border: 1px solid #333;
+            color: var(--hacker-green);
+            padding: 12px;
+            font-family: monospace;
+            font-size: 14px;
+        }
+
+        .form-textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .btn-save {
+            background: var(--hacker-green);
+            color: black;
+            border: none;
+            padding: 12px 30px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .btn-cancel {
+            background: transparent;
+            border: 1px solid #ff5555;
+            color: #ff5555;
+            padding: 12px 30px;
+            cursor: pointer;
+        }
+
+        .uploaded-files {
+            margin-top: 40px;
+            border-top: 1px solid #333;
+            padding-top: 30px;
+        }
+
+        .file-item {
+            background: #1a1a1a;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 3px solid var(--hacker-green);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .file-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-edit, .btn-delete {
+            padding: 5px 15px;
+            border: none;
+            cursor: pointer;
+            font-family: monospace;
+        }
+
+        .btn-edit {
+            background: var(--neon-blue);
+            color: white;
+        }
+
+        .btn-delete {
+            background: #ff3333;
+            color: white;
+        }
+
+        /* Футер */
+        footer {
+            text-align: center;
+            padding: 60px 20px 30px;
+            border-top: 1px solid #333;
+            margin-top: 80px;
+        }
+
+        .creator-info {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid var(--hacker-green);
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .creator-name {
+            color: var(--neon-blue);
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .creator-desc {
+            color: #aaa;
+            font-style: italic;
+        }
+
+        .copyright {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 30px;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .scripts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .filter-tabs {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .admin-content {
+                padding: 20px;
+                margin: 20px auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Матрица фон -->
+    <div class="matrix-bg" id="matrixCanvas"></div>
+
+    <!-- Секретный доступ -->
+    <div class="secret-access">
+        <button class="secret-btn" onclick="openAdminModal()">
+            <i class="fas fa-terminal"></i> ADMIN
+        </button>
+    </div>
+
+    <!-- Админ модалка -->
+    <div class="admin-modal" id="adminModal">
+        <div class="admin-content">
+            <button class="close-admin" onclick="closeAdminModal()">×</button>
+            
+            <div class="admin-panel">
+                <h2 class="admin-title">
+                    <i class="fas fa-user-secret"></i> Панель администратора NexaCheat
+                </h2>
+                
+                <form id="uploadForm" class="admin-form">
+                    <div class="form-group">
+                        <label class="form-label">Название скрипта:</label>
+                        <input type="text" class="form-input" id="scriptName" placeholder="NexaArizonav1.3.lua" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Описание скрипта:</label>
+                        <textarea class="form-textarea" id="scriptDescription" placeholder="Что делает этот скрипт..." required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Основные функции (каждая с новой строки):</label>
+                        <textarea class="form-textarea" id="scriptFeatures" placeholder="Авто-фарм руды\nАвто-прокачка\nЗащита от AFK..." required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Категория:</label>
+                        <select class="form-input" id="scriptCategory">
+                            <option value="auto">Автоматизация</option>
+                            <option value="teleport">Телепорты</option>
+                            <option value="cheat">Читы</option>
+                            <option value="bot">Боты</option>
+                            <option value="helper">Помощники</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Версия:</label>
+                        <input type="text" class="form-input" id="scriptVersion" placeholder="v1.3.2" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Загрузка файла (.lua):</label>
+                        <input type="file" class="form-file" id="scriptFile" accept=".lua" required>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn-save">
+                            <i class="fas fa-upload"></i> Загрузить скрипт
+                        </button>
+                        <button type="button" class="btn-cancel" onclick="clearForm()">
+                            <i class="fas fa-times"></i> Очистить
+                        </button>
+                    </div>
+                </form>
+                
+                <div class="uploaded-files">
+                    <h3 style="color: var(--hacker-green); margin-bottom: 20px;">
+                        <i class="fas fa-list"></i> Загруженные скрипты
+                    </h3>
+                    <div id="filesList">
+                        <!-- Список файлов будет здесь -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Заголовок -->
+    <header class="header">
+        <h1>NexaCheat</h1>
+        <div class="tagline">Каталог Lua-скриптов для ArizonaRP и других проектов</div>
+        
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-number" id="totalScripts">14</div>
+                <div>Скриптов</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">1.2k</div>
+                <div>Загрузок</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">99%</div>
+                <div>Работоспособность</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Основной контент -->
+    <main class="scripts-section">
+        <div class="filter-tabs">
+            <button class="filter-tab active" data-filter="all">Все скрипты</button>
+            <button class="filter-tab" data-filter="auto">Автоматизация</button>
+            <button class="filter-tab" data-filter="teleport">Телепорты</button>
+            <button class="filter-tab" data-filter="cheat">Читы</button>
+            <button class="filter-tab" data-filter="bot">Боты</button>
+            <button class="filter-tab" data-filter="helper">Помощники</button>
+        </div>
+
+        <div class="scripts-grid" id="scriptsContainer">
+            <!-- Скрипты будут загружены через JavaScript -->
+        </div>
+    </main>
+
+    <!-- Информация о создателе -->
+    <footer>
+        <div class="creator-info">
+            <div class="creator-name">NexaCreator</div>
+            <div class="creator-desc">Разработчик Lua-скриптов для игровых проектов с 2023 года</div>
+            <div style="margin-top: 15px; color: #777;">
+                <i class="fas fa-code"></i> Все скрипты проверены и протестированы
+            </div>
+        </div>
+        
+        <div class="copyright">
+            &copy; 2024 NexaCheat Project. Все скрипты предназначены только для ознакомления.<br>
+            <span style="color: #ff5555; font-size: 0.8rem;">Использование на серверах может нарушать правила проекта!</span>
+        </div>
+    </footer>
+
+    <script>
+        // Матрица фон
+        const canvas = document.getElementById('matrixCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$+-*/=%\"'#&_(),.;:?!\\|{}<>[]^~";
+        const charArray = chars.split("");
+        const fontSize = 14;
+        const columns = canvas.width / fontSize;
+        const drops = [];
+
+        for (let i = 0; i < columns; i++) {
+            drops[i] = Math.floor(Math.random() * canvas.height / fontSize) * fontSize;
+        }
+
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(10, 10, 10, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = '#00ff00';
+            ctx.font = `${fontSize}px monospace`;
+            
+            for (let i = 0; i < drops.length; i++) {
+                const text = charArray[Math.floor(Math.random() * charArray.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+
+        setInterval(drawMatrix, 50);
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        // Данные скриптов
+        const scriptsData = [
+            {
+                id: 1,
+                name: "NexaШахтаБот.lua",
+                description: "Автоматический бот для майнинга в шахтах ArizonaRP. Автоматически находит и добывает руду, складывает в сундук.",
+                features: ["Авто-майнинг руды", "Сортировка ресурсов", "Авто-ремонт инструментов", "Избегание игроков"],
+                category: "bot",
+                version: "v2.1",
+                downloads: 342,
+                rating: 5
+            },
+            {
+                id: 2,
+                name: "NexaArizonav1.3.lua",
+                description: "Комплексный чит для ArizonaRP с множеством функций для удобной игры и автоматизации.",
+                features: ["ESP игроков", "Радар ресурсов", "Авто-крафт", "Быстрые телепорты"],
+                category: "cheat",
+                version: "v1.3",
+                downloads: 876,
+                rating: 5
+            },
+            {
+                id: 3,
+                name: "NexaHelperBtc.lua",
+                description: "Помощник для майнинга Bitcoin на серверах с криптовалютой. Автоматический расчет прибыли.",
+                features: ["Авто-майнинг BTC", "Расчет доходности", "Уведомления", "Статистика"],
+                category: "helper",
+                version: "v1.0",
+                downloads: 123,
+                rating: 4
+            },
+            {
+                id: 4,
+                name: "NexaAutoSu.lua",
+                description: "Автоматическая система /su для администраторов. Автоматизирует процесс выдачи предметов.",
+                features: ["Авто-/su команды", "Шаблоны выдач", "Логирование", "Быстрый доступ"],
+                category: "auto",
+                version: "v1.2",
+                downloads: 89,
+                rating: 5
+            },
+            {
+                id: 5,
+                name: "NexaTeleport.lua",
+                description: "Система быстрых телепортов по заранее сохраненным точкам. Поддержка горячих клавиш.",
+                features: ["10+ точек телепорта", "Горячие клавиши", "Координаты в чат", "Авто-путь"],
+                category: "teleport",
+                version: "v3.0",
+                downloads: 567,
+                rating: 5
+            },
+            {
+                id: 6,
+                name: "NexaHouseManager.lua",
+                description: "Управление домами и имуществом. Автоматическая защита, система аренды.",
+                features: ["Авто-защита", "Система аренды", "Управление доступом", "Инвентарь домов"],
+                category: "helper",
+                version: "v2.5",
+                downloads: 234,
+                rating: 4
+            },
+            {
+                id: 7,
+                name: "NexaMobile.lua",
+                description: "Имитация мобильного телефона в игре с функциями звонилки, сообщений и приложений.",
+                features: ["Телефонная книга", "СМС сообщения", "Мини-игры", "Калькулятор"],
+                category: "helper",
+                version: "v1.8",
+                downloads: 456,
+                rating: 4
+            },
+            {
+                id: 8,
+                name: "NexaLuxuryLarec.lua",
+                description: "Автоматический сбор ресурсов на Luxury серверах. Оптимизирован под специфику сервера.",
+                features: ["Авто-сбор ларекса", "Оптимизация пути", "Уклонение от охраны", "Авто-продажа"],
+                category: "auto",
+                version: "v1.5",
+                downloads: 321,
+                rating: 5
+            },
+            {
+                id: 9,
+                name: "NexaBochkaBot.lua",
+                description: "Бот для автоматической игры в 'бочку' и других азартных мини-игр на серверах.",
+                features: ["Авто-ставки", "Анализ вероятности", "Система Мартингейла", "Стоп-лосс"],
+                category: "bot",
+                version: "v1.1",
+                downloads: 189,
+                rating: 3
+            },
+            {
+                id: 10,
+                name: "NexaAccUp.lua",
+                description: "Автоматическая прокачка аккаунтов. Поднимает уровень, выполняет квесты автоматически.",
+                features: ["Авто-прокачка", "Выполнение квестов", "Фарм достижений", "Смена персонажей"],
+                category: "auto",
+                version: "v2.2",
+                downloads: 432,
+                rating: 5
+            },
+            {
+                id: 11,
+                name: "NexaCheatMenu.lua",
+                description: "Графическое меню для управления всеми читами. Удобный интерфейс с настройками.",
+                features: ["GUI интерфейс", "Настройки читов", "Профили настроек", "Горячие клавиши"],
+                category: "cheat",
+                version: "v4.0",
+                downloads: 654,
+                rating: 5
+            },
+            {
+                id: 12,
+                name: "NexaLovlyaViceCity.lua",
+                description: "Автоматическая система рыбалки для Vice City серверов с продажей улова.",
+                features: ["Авто-рыбалка", "Сортировка улова", "Авто-продажа", "Статистика улова"],
+                category: "auto",
+                version: "v1.4",
+                downloads: 278,
+                rating: 4
+            }
+        ];
+
+        // Загрузка скриптов на страницу
+        function loadScripts(filter = 'all') {
+            const container = document.getElementById('scriptsContainer');
+            container.innerHTML = '';
+            
+            const filteredScripts = filter === 'all' 
+                ? scriptsData 
+                : scriptsData.filter(script => script.category === filter);
+            
+            filteredScripts.forEach(script => {
+                const card = document.createElement('div');
+                card.className = 'script-card';
+                card.innerHTML = `
+                    <div class="script-header">
+                        <div class="script-name">${script.name}</div>
+                        <div class="script-badge">${script.category}</div>
+                    </div>
+                    <div class="script-description">${script.description}</div>
+                    <div class="script-features">
+                        ${script.features.map(feat => `
+                            <div class="script-feature">${feat}</div>
+                        `).join('')}
+                    </div>
+                    <div class="script-footer">
+                        <div class="script-version">${script.version} | ${script.downloads} загрузок</div>
+                        <a href="#" class="download-btn" onclick="downloadScript('${script.name}')">
+                            <i class="fas fa-download"></i> Скачать
+                        </a>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+            
+            // Обновляем счетчик
+            document.getElementById('totalScripts').textContent = filteredScripts.length;
+        }
+
+        // Фильтрация
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                loadScripts(tab.dataset.filter);
+            });
+        });
+
+        // Админ панель
+        let adminPassword = "NEXA_ADMIN_2024"; // Секретный код
+
+        function openAdminModal() {
+            const password = prompt("Введите секретный код доступа:");
+            if (password === adminPassword) {
+                document.getElementById('adminModal').style.display = 'block';
+                loadFilesList();
+            } else {
+                alert("Неверный код доступа!");
+            }
+        }
+
+        function closeAdminModal() {
+            document.getElementById('adminModal').style.display = 'none';
+        }
+
+        function clearForm() {
+            document.getElementById('uploadForm').reset();
+        }
+
+        // Загрузка скрипта
+        document.getElementById('uploadForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const scriptData = {
+                name: document.getElementById('scriptName').value,
+                description: document.getElementById('scriptDescription').value,
+                features: document.getElementById('scriptFeatures').value.split('\n'),
+                category: document.getElementById('scriptCategory').value,
+                version: document.getElementById('scriptVersion').value,
+                downloads: 0,
+                rating: 5,
+                id: scriptsData.length + 1
+            };
+            
+            scriptsData.push(scriptData);
+            
+            // Сохраняем в localStorage
+            localStorage.setItem('nexaScripts', JSON.stringify(scriptsData));
+            
+            // Обновляем список файлов
+            loadFilesList();
+            
+            // Очищаем форму
+            clearForm();
+            
+            alert('Скрипт успешно загружен!');
+        });
+
+        // Загрузка списка файлов
+        function loadFilesList() {
+            const filesList = document.getElementById('filesList');
+            filesList.innerHTML = '';
+            
+            scriptsData.forEach((script, index) => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
+                    <div>
+                        <strong>${script.name}</strong>
+                        <div style="color: #aaa; font-size: 0.9rem; margin-top: 5px;">
+                            ${script.description.substring(0, 100)}...
+                        </div>
+                    </div>
+                    <div class="file-actions">
+                        <button class="btn-edit" onclick="editScript(${index})">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn-delete" onclick="deleteScript(${index})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                filesList.appendChild(fileItem);
+            });
+        }
+
+        function editScript(index) {
+            const script = scriptsData[index];
+            document.getElementById('scriptName').value = script.name;
+            document.getElementById('scriptDescription').value = script.description;
+            document.getElementById('scriptFeatures').value = script.features.join('\n');
+            document.getElementById('scriptCategory').value = script.category;
+            document.getElementById('scriptVersion').value = script.version;
+            
+            // Удаляем старый скрипт
+            scriptsData.splice(index, 1);
+        }
+
+        function deleteScript(index) {
+            if (confirm('Удалить этот скрипт?')) {
+                scriptsData.splice(index, 1);
+                localStorage.setItem('nexaScripts', JSON.stringify(scriptsData));
+                loadFilesList();
+                loadScripts();
+            }
+        }
+
+        // Скачивание скрипта
+        function downloadScript(filename) {
+            alert(`Начинается загрузка: ${filename}\n(В реальной реализации здесь будет ссылка на файл)`);
+            
+            // В реальном проекте здесь будет fetch запрос к серверу для скачивания файла
+        }
+
+        // Загрузка из localStorage при старте
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedScripts = localStorage.getItem('nexaScripts');
+            if (savedScripts) {
+                const parsed = JSON.parse(savedScripts);
+                scriptsData.push(...parsed.slice(12)); // Добавляем только новые скрипты
+            }
+            
+            loadScripts();
+        });
+
+        // Горячие клавиши
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.altKey && e.key === 'n') {
+                openAdminModal();
+            }
+        });
+    </script>
+</body>
+</html>
